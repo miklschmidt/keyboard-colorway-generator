@@ -61,6 +61,7 @@ const eslintConfig = [
 					'react/display-name': 'off',
 					'no-console': 'error',
 					camelcase: ['warn'],
+					'no-restricted-syntax': ['error', 'IfStatement[alternate=null] > ReturnStatement'],
 				},
 			},
 		],
