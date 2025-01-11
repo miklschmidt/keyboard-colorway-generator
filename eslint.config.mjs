@@ -15,6 +15,7 @@ const eslintConfig = [
 		'next/typescript',
 		'plugin:react-hooks/recommended',
 		'plugin:valtio/recommended',
+		'plugin:react/recommended',
 	),
 	...compat.plugins('@typescript-eslint', 'unused-imports', 'prettier', '@limegrass/import-alias'),
 	...compat.config({
@@ -27,7 +28,10 @@ const eslintConfig = [
 					tsconfigRootDir: import.meta.dirname,
 				},
 				rules: {
+					'react/react-in-jsx-scope': 'off',
+					'react/no-unknown-property': 'off',
 					'react/no-unescaped-entities': 'off',
+					'react/prop-types': 'off',
 					'jsx-quotes': 1,
 					'no-duplicate-imports': 1,
 					'@limegrass/import-alias/import-alias': ['error', { aliasConfigPath: './tsconfig.json' }],
