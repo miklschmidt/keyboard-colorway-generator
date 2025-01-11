@@ -1,0 +1,195 @@
+'use client';
+
+import * as React from 'react';
+
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { Button } from '@/components/ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+	ColorHarmonyResponseSchema,
+	ColorSchemeKeySchema,
+	type ColorHarmonyResponse,
+	type ColorScheme,
+} from '@/zods/palettespro';
+import { Loading } from '@/components/loading';
+import { useIsMutating, useMutationState } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
+import { SwatchBook } from 'lucide-react';
+import { camelCaseToTitleCase, colorschemeMutationKey } from '@/lib/utils';
+import { logger } from '@/lib/logger';
+import { useSnapshot } from 'valtio';
+import { keyboardState } from '@/state/keyboard';
+
+export type ColorSchemeSelection = {
+	value: keyof ColorHarmonyResponse;
+	colors: ColorScheme[];
+	label: string;
+};
+
+type ColorSchemeProps = {
+	id?: string;
+	setColorScheme: (colorScheme: ColorSchemeSelection | null) => void;
+	selectedColorScheme: ColorSchemeSelection | null;
+};
+
+export function ColorSchemeSelector({ setColorScheme, selectedColorScheme, id }: ColorSchemeProps) {
+	const [open, setOpen] = React.useState(false);
+	const isDesktop = useMediaQuery('(min-width: 768px)');
+
+	const { originalColor } = useSnapshot(keyboardState);
+	const mutationKey = useMemo(() => colorschemeMutationKey(originalColor), [originalColor]);
+	const isLoading = useIsMutating({ mutationKey: mutationKey }) > 0;
+
+	const colorSchemesMutations = useMutationState({
+		filters: { mutationKey: mutationKey, status: 'success' },
+		select: (mutation) => {
+			if (mutation.state.data == null) {
+				return [];
+			}
+			const state = ColorHarmonyResponseSchema.safeParse(mutation.state.data);
+			if (!state.success) {
+				return [];
+			}
+			return Object.keys(state.data)
+				.map((k) => {
+					const key = ColorSchemeKeySchema.safeParse(k);
+					if (!key.success) {
+						logger.error('Invalid color scheme key', k);
+						return null;
+					}
+					return {
+						value: key.data,
+						label: camelCaseToTitleCase(key.data),
+						colors: state.data[key.data],
+					};
+				})
+				.filter((scheme) => scheme !== null);
+		},
+	});
+
+	const colorSchemes = useMemo(() => {
+		return colorSchemesMutations.length > 0 ? (colorSchemesMutations[colorSchemesMutations.length - 1] ?? []) : [];
+	}, [colorSchemesMutations]);
+
+	const trigger = (
+		<Button variant="outline" className="justify-start pl-2">
+			<SwatchBook className="mr-2 h-4 w-4" />
+			{selectedColorScheme ? (
+				<div className="flex flex-1 items-center justify-between gap-2">
+					<span>{selectedColorScheme.label}</span>
+					<ColorSchemeBar colorScheme={selectedColorScheme} />
+				</div>
+			) : (
+				<>Pick a color scheme</>
+			)}
+		</Button>
+	);
+
+	if (isDesktop) {
+		return (
+			<Popover open={open} onOpenChange={setOpen}>
+				<PopoverTrigger asChild id={id}>
+					{trigger}
+				</PopoverTrigger>
+				<PopoverContent className="w-[300px] p-0" align="start">
+					<ColorSchemeList
+						isLoading={isLoading}
+						colorSchemes={colorSchemes}
+						setOpen={setOpen}
+						setSelectedColorScheme={setColorScheme}
+					/>
+				</PopoverContent>
+			</Popover>
+		);
+	}
+
+	return (
+		<Drawer open={open} onOpenChange={setOpen}>
+			<DrawerTrigger asChild id={id}>
+				{trigger}
+			</DrawerTrigger>
+			<DrawerContent>
+				<div className="mt-4 border-t">
+					<ColorSchemeList
+						isLoading={isLoading}
+						colorSchemes={colorSchemes}
+						setOpen={setOpen}
+						setSelectedColorScheme={setColorScheme}
+					/>
+				</div>
+			</DrawerContent>
+		</Drawer>
+	);
+}
+
+function ColorSchemeBar({ colorScheme }: { colorScheme: ColorSchemeSelection }) {
+	return (
+		<div className="inline-flex overflow-hidden rounded-full">
+			{colorScheme.colors.map((color) => (
+				<div
+					key={`${color.hsl.h}-${color.hsl.s}-${color.hsl.l}`}
+					className="h-4 w-4"
+					style={{ backgroundColor: `hsl(${color.hsl.h}, ${color.hsl.s}%, ${color.hsl.l}%)` }}
+				></div>
+			))}
+		</div>
+	);
+}
+
+function ColorSchemeList({
+	setOpen,
+	colorSchemes,
+	isLoading,
+	setSelectedColorScheme,
+}: {
+	setOpen: (open: boolean) => void;
+	colorSchemes: ColorSchemeSelection[];
+	isLoading: boolean;
+	setSelectedColorScheme: (colorScheme: ColorSchemeSelection | null) => void;
+}) {
+	const onSelect = useCallback(
+		(value: string | undefined) => {
+			if (value === undefined) {
+				setSelectedColorScheme(null);
+			} else {
+				setSelectedColorScheme(colorSchemes.find((colorScheme) => colorScheme.value === value) || null);
+			}
+			setOpen(false);
+		},
+		[colorSchemes, setSelectedColorScheme, setOpen],
+	);
+
+	return (
+		<Command>
+			<CommandInput placeholder="Filter color schemes..." />
+			<CommandList>
+				{isLoading ? (
+					<CommandEmpty className="flex items-center gap-2">
+						<Loading size="sm" /> Fetching color schemes...
+					</CommandEmpty>
+				) : (
+					colorSchemes.length === 0 && (
+						<CommandEmpty>No color schemes found. Select a primary color to generate color schemes.</CommandEmpty>
+					)
+				)}
+				<CommandGroup>
+					<CommandItem value={undefined} onSelect={onSelect}>
+						No color scheme
+					</CommandItem>
+					{colorSchemes.map((colorScheme) => (
+						<CommandItem
+							className="flex justify-between"
+							key={colorScheme.value}
+							value={colorScheme.value}
+							onSelect={onSelect}
+						>
+							{colorScheme.label} <ColorSchemeBar colorScheme={colorScheme} />
+						</CommandItem>
+					))}
+				</CommandGroup>
+			</CommandList>
+		</Command>
+	);
+}

@@ -5,8 +5,10 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { extend, useFrame } from '@react-three/fiber';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
-import { useRef } from 'react';
-import { type Group } from 'three';
+import { useMemo, useRef } from 'react';
+import { type MeshStandardMaterial, type Group } from 'three';
+import { keyboardState } from '@/state/keyboard';
+import { hslaToHex } from '@/lib/utils';
 
 // Extend TextGeometry so it's available as a JSX element
 const Text = extend(TextGeometry);
@@ -14,7 +16,6 @@ const Text = extend(TextGeometry);
 // Extend RoundedBoxGeometry so it's available as a JSX element
 const RoundedBox = extend(RoundedBoxGeometry);
 
-// Load the font - you'll need to adjust the path to your font file
 const fontLoader = new FontLoader();
 export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 	const { data: fonts } = useSuspenseQuery({
@@ -35,18 +36,40 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 	});
 
 	const keycapRef = useRef<Group>(null);
+	const keycapMaterialRef = useRef<MeshStandardMaterial>(null);
+	const keycapTextMaterialRef = useRef<MeshStandardMaterial>(null);
 
 	useFrame(({ clock }) => {
-		// Tween z position to 0
-		if (keycapRef.current == null) return;
+		// Update keycap color
+		if (keycap.labels.length === 0) {
+			return;
+		}
+		if (keycap.labels.length === 1 && (keycap.labels[0]?.length ?? 0) > 1) {
+			keycapMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.primary));
+			keycapTextMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.primaryForeground));
+		} else {
+			keycapMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.secondary));
+			keycapTextMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.secondaryForeground));
+		}
+
+		// Animate keycap
+		if (keycapRef.current == null || !keyboardState.settings.animateKeycaps) {
+			return;
+		}
 		const z = Math.sin(clock.getElapsedTime() * 2 * Math.PI + keycap.x + keycap.y) * 0.1;
 		const pos = keycapRef.current?.position;
-		if (pos == null) return;
+		if (pos == null) {
+			return;
+		}
 		keycapRef.current?.position.set(pos.x, pos.y, z);
 	});
 
 	const rotation = keycap.rotation_angle !== 0 ? keycap.rotation_angle * (Math.PI / 180) * -1 : 0;
 	const labels = keycap.labels.filter((l) => l != '');
+
+	const textMaterial = useMemo(() => {
+		return <meshStandardMaterial color="black" ref={keycapTextMaterialRef} />;
+	}, []);
 
 	return (
 		<group position={[rotation === 0 ? 0 : rotation < 0 ? -1 : 1, 0, 0]} rotation={[0, 0, rotation]}>
@@ -61,7 +84,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 							0.1, // radius of the rounded corners
 						]}
 					/>
-					<meshStandardMaterial color="white" />
+					<meshStandardMaterial ref={keycapMaterialRef} color="white" />
 				</mesh>
 
 				{/* Text */}
@@ -69,11 +92,11 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 					<>
 						<mesh position={[-keycap.width / 2 + 0.3, keycap.height / 2 - 0.35, 0.31]}>
 							<Text args={[labels[0]?.trim() || '', { font: fonts.mono, size: 0.15, depth: 0.01 }]} />
-							<meshStandardMaterial color="black" />
+							{textMaterial}
 						</mesh>
 						<mesh position={[-keycap.width / 2 + 0.3, keycap.height / 2 - 0.65, 0.31]}>
 							<Text args={[labels[1]?.trim() || '', { font: fonts.mono, size: 0.15, depth: 0.01 }]} />
-							<meshStandardMaterial color="black" />
+							{textMaterial}
 						</mesh>
 					</>
 				) : (
@@ -84,7 +107,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 								{ font: fonts.sans, size: (labels[0]?.length ?? 0) > 1 ? 0.17 : 0.2, depth: 0.01 },
 							]}
 						/>
-						<meshStandardMaterial color="black" />
+						{textMaterial}
 					</mesh>
 				)}
 			</group>

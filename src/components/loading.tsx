@@ -1,6 +1,33 @@
-export const Loading = () => {
+import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+const variants = cva('inline-block', {
+	variants: {
+		size: {
+			sm: 'h-5 w-5',
+			md: 'h-8 w-8',
+			lg: 'h-12 w-12',
+			xl: 'h-24 w-24',
+		},
+	},
+	defaultVariants: {
+		size: 'md',
+	},
+});
+
+type LoadingProps = VariantProps<typeof variants> & {
+	className?: string;
+};
+
+export const Loading = ({ className, size }: LoadingProps) => {
 	return (
-		<svg className="block h-24 w-24" viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+		<svg
+			className={cn(variants({ size }), className)}
+			viewBox="0 0 200 200"
+			width="200"
+			height="200"
+			xmlns="http://www.w3.org/2000/svg"
+		>
 			<defs>
 				<linearGradient id="loader-grad1" x1="1" y1="0.5" x2="0" y2="0.5">
 					<stop offset="0%" stopColor="hsl(var(--primary))" />

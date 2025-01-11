@@ -2,13 +2,14 @@ import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getLayouts } from '@/actions/layouts';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useCallback } from 'react';
-import { setKeyboardLayout } from '@/state/keyboard';
+import { keyboardState, keyboardActions } from '@/state/keyboard';
+import { useSnapshot } from 'valtio/react';
+import { Switch } from '@/components/ui/switch';
 
 export function KeyboardSettings() {
 	const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -17,13 +18,16 @@ export function KeyboardSettings() {
 		queryFn: async () => {
 			return await getLayouts();
 		},
+		// No unneeded requests here!
 		enabled: isPopoverOpen,
 	});
+	const selectedKeyboard = useSnapshot(keyboardState.layout);
+	const settings = useSnapshot(keyboardState.settings);
 	const setSelectedLayout = useCallback(
 		(layoutId: string) => {
 			const layout = layouts?.find((layout) => layout.id === layoutId);
 			if (layout) {
-				setKeyboardLayout(layout);
+				keyboardActions.setKeyboardLayout(layout);
 			} else {
 				// TODO: replace with toast
 				// eslint-disable-next-line no-console
@@ -32,40 +36,48 @@ export function KeyboardSettings() {
 		},
 		[layouts],
 	);
+	const onAnimateKeycapsChange = useCallback((val: boolean) => {
+		keyboardState.settings.animateKeycaps = val;
+	}, []);
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Create project</CardTitle>
-				<CardDescription>Deploy your new project in one-click.</CardDescription>
+				<CardTitle>Keyboard Settings</CardTitle>
+				<CardDescription>Change settings that effect the keyboard.</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<form>
-					<div className="grid w-full items-center gap-4">
-						<div className="flex flex-col space-y-1.5">
-							<Label htmlFor="name">Name</Label>
-							<Input id="name" placeholder="Name of your project" />
-						</div>
-						<div className="flex flex-col space-y-1.5">
-							<Label htmlFor="framework">Framework</Label>
-							<Select onOpenChange={setIsPopoverOpen} onValueChange={setSelectedLayout}>
-								<SelectTrigger id="framework">
-									<SelectValue placeholder="Select" />
-								</SelectTrigger>
-								<SelectContent position="popper">
-									{isFetched ? (
-										layouts?.map((layout) => (
-											<SelectItem key={layout.id} value={layout.id}>
-												{layout.name}
-											</SelectItem>
-										))
-									) : (
-										<span className="text-muted-foreground">Loading layouts...</span>
-									)}
-								</SelectContent>
-							</Select>
+				<div className="grid w-full items-center gap-4">
+					<div className="flex flex-col space-y-1.5">
+						<div className="flex items-center justify-between space-x-2">
+							<Label htmlFor="animate-keycaps">Animate Keycaps</Label>
+							<Switch id="animate-keycaps" onCheckedChange={onAnimateKeycapsChange} checked={settings.animateKeycaps} />
 						</div>
 					</div>
-				</form>
+					<div className="flex flex-col space-y-1.5">
+						<Label htmlFor="keyboard-layout">Keyboard Layout</Label>
+						<Select onOpenChange={setIsPopoverOpen} onValueChange={setSelectedLayout} value={selectedKeyboard.id}>
+							<SelectTrigger id="keyboard-layout">
+								<SelectValue placeholder="Select" />
+							</SelectTrigger>
+							<SelectContent position="popper">
+								{isFetched ? (
+									layouts?.map((layout) => (
+										<SelectItem key={layout.id} value={layout.id}>
+											{layout.name}
+										</SelectItem>
+									))
+								) : (
+									<>
+										<SelectItem key={selectedKeyboard.id} value={selectedKeyboard.id}>
+											{selectedKeyboard.name}
+										</SelectItem>
+										<span className="text-muted-foreground">Loading layouts...</span>
+									</>
+								)}
+							</SelectContent>
+						</Select>
+					</div>
+				</div>
 			</CardContent>
 			<CardFooter className="flex justify-between">
 				<Button variant="outline">Cancel</Button>
