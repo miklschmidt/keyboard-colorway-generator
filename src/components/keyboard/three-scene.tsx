@@ -1,10 +1,13 @@
 'use client';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, extend, useThree } from '@react-three/fiber';
 import { Keyboard } from '@/components/keyboard/keyboard';
 import { Loading } from '@/components/loading';
 import { uiState } from '@/state/ui';
 import { useSnapshot } from 'valtio/react';
 import { twJoin } from 'tailwind-merge';
+import { OrbitControls as OrbitControlsThree } from 'three/addons/controls/OrbitControls.js';
+
+const OrbitControls = extend(OrbitControlsThree);
 
 const LoadingOverlay = () => {
 	const ui = useSnapshot(uiState);
@@ -20,6 +23,19 @@ const LoadingOverlay = () => {
 	);
 };
 
+const Controls = () => {
+	const { camera, gl } = useThree((state) => ({ camera: state.camera, gl: state.gl }));
+	return (
+		<OrbitControls
+			args={[camera, gl.domElement]}
+			enablePan={false}
+			enableRotate={false}
+			maxDistance={20}
+			minDistance={1}
+		/>
+	);
+};
+
 export const ThreeScene = () => {
 	return (
 		<div className="relative flex-1 overflow-hidden rounded-t-xl">
@@ -29,6 +45,7 @@ export const ThreeScene = () => {
 				<directionalLight castShadow position={[-15, 15, 12]} intensity={1} shadow-mapSize={[1024, 1024]}>
 					<perspectiveCamera attach="shadow-camera" />
 				</directionalLight>
+				<Controls />
 				<Keyboard />
 			</Canvas>
 			<LoadingOverlay />
