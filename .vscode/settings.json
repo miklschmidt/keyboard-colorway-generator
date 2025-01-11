@@ -2,5 +2,6 @@
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": false,
 	"editor.formatOnSave": true,
-	"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	"editor.defaultFormatter": "dbaeumer.vscode-eslint",
+	"tailwindCSS.experimental.configFile": "tailwind.config.ts"
 }
