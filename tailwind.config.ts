@@ -11,6 +11,24 @@ export default {
 			fontFamily: {
 				sans: ['var(--font-geist-sans)', ...fontFamily.sans],
 			},
+			animation: {
+				dotring: 'dotring 2s ease-out infinite',
+				dropbounce: 'dropbounce 2s ease-out infinite',
+			},
+			keyframes: {
+				dotring: {
+					'0%': { strokeDasharray: '0 257 0 0 1 0 0 258' },
+					'25%': { strokeDasharray: '0 0 0 0 257 0 258 0' },
+					'50%, 100%': { strokeDasharray: '0 0 0 0 0 515 0 0' },
+				},
+				dropbounce: {
+					'0%, 50%': { strokeDashoffset: '1', animationTimingFunction: 'ease-in' },
+					'64%': { strokeDashoffset: '-109', animationTimingFunction: 'ease-in' },
+					'78%': { strokeDashoffset: '-145', animationTimingFunction: 'ease-in' },
+					'92%': { strokeDashoffset: '-157', animationTimingFunction: 'ease-in' },
+					'57%, 71%, 85%, 99%, 100%': { strokeDashoffset: '-163', animationTimingFunction: 'ease-out' },
+				},
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
