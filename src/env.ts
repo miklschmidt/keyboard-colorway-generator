@@ -3,8 +3,7 @@ import { z } from 'zod';
 
 export const env = createEnv({
 	/**
-	 * Specify your server-side environment variables schema here. This way you can ensure the app
-	 * isn't built with invalid env vars.
+	 * Server side variables, not accessible to the client.
 	 */
 	server: {
 		NODE_ENV: z.enum(['development', 'test', 'production']),
@@ -12,12 +11,10 @@ export const env = createEnv({
 	},
 
 	/**
-	 * Specify your client-side environment variables schema here. This way you can ensure the app
-	 * isn't built with invalid env vars. To expose them to the client, prefix them with
-	 * `NEXT_PUBLIC_`.
+	 * Client side variables. Has to be prefixed with NEXT_PUBLIC_
 	 */
 	client: {
-		// NEXT_PUBLIC_CLIENTVAR: z.string(),
+		NEXT_PUBLIC_ENVIRONMENT: z.string(),
 	},
 
 	/**
@@ -27,7 +24,7 @@ export const env = createEnv({
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
 		KEYBOARD_LAYOUTS_PATH: process.env.KEYBOARD_LAYOUTS_PATH,
-		// NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+		NEXT_PUBLIC_ENVIRONMENT: process.env.NODE_ENV,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
