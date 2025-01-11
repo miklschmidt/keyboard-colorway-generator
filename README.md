@@ -66,3 +66,15 @@ DX:
 - [eslint](https://eslint.org/)
 - [prettier](https://prettier.io/)
 - [typescript](https://www.typescriptlang.org/)
+
+
+## TODO
+
+- [ ] Add focus styles
+- [ ] Add different keyboard colorway applicators (how colors are applied to individual key types)
+- [ ] Add keycap selection to change the properties of an individual keycap
+- [ ] Add keyboard simulation
+- [ ] Persist settings in local storage, add import / export.
+- [ ] Support all 9 legend positions
+- [ ] Add more keyboard layouts
+- [ ] Add KLE json upload.
