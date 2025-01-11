@@ -2,6 +2,7 @@
 import { proxy } from 'valtio';
 
 export const uiState = proxy({
-	showKeyboardSettings: false,
+	showKeyboardSettings: true,
+	isKeyboardPending: true,
 	darkMode: true,
 });
