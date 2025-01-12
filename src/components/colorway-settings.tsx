@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useQuery } from '@tanstack/react-query';
 import { ColorPicker } from '@/components/color-picker';
@@ -18,9 +17,9 @@ import { toast } from 'sonner';
 export function ColorwaySettings() {
 	const { originalColor, colorScheme: currentColorScheme } = useSnapshot(keyboardState);
 	const [selectedColorScheme, setSelectedColorScheme] = useState<ColorSchemeSelection | null>(null);
-	// Third party API is called imperatively to avoid unneeded requests
-	// It is proxied through our server, since it doesn't allow CORS.
+	// Third party API is proxied through our server, since it doesn't allow CORS.
 	// The result is cached on the server for each parameter value, so we don't issue the same request twice.
+	// Furthermore the client throttles the requests and has it's own query cache.
 	const queryKey = colorschemeQueryKey(originalColor);
 	const colorSchemes = useQuery({
 		queryKey,
@@ -102,10 +101,6 @@ export function ColorwaySettings() {
 					</div>
 				</div>
 			</CardContent>
-			<CardFooter className="flex justify-between">
-				<Button variant="outline">Cancel</Button>
-				<Button>Deploy</Button>
-			</CardFooter>
 		</Card>
 	);
 }
