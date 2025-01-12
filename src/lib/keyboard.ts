@@ -77,3 +77,33 @@ export const isSpaceKey = (labels: string[]) => {
 		.filter((label) => label != null)
 		.every((label) => label.startsWith('space') || label.startsWith('spacebar') || label == '' || label == null);
 };
+
+const kleKeyToBrowserKeyMap = {
+	ctrl: 'control',
+	shift: 'shift',
+	alt: 'alt',
+	meta: 'meta',
+	cmd: 'meta',
+	option: 'alt',
+	tab: 'tab',
+	enter: 'enter',
+	esc: 'escape',
+	backspace: 'backspace',
+	'': 'space',
+	backtick: 'backtick',
+	backslash: 'backslash',
+	comma: 'comma',
+	period: 'period',
+	slash: 'slash',
+	pgdn: 'page down',
+	pgup: 'page up',
+	home: 'home',
+	end: 'end',
+	insert: 'insert',
+	delete: 'delete',
+	scrolllock: 'scroll lock',
+};
+
+export const kleKeyToBrowserKey = (key: string) => {
+	return kleKeyToBrowserKeyMap[key.toLocaleLowerCase() as keyof typeof kleKeyToBrowserKeyMap] || key;
+};

@@ -24,14 +24,16 @@ const LoadingOverlay = () => {
 };
 
 const Controls = () => {
-	const { camera, gl } = useThree((state) => ({ camera: state.camera, gl: state.gl }));
+	const three = useThree((state) => ({ camera: state.camera, gl: state.gl, get: state.get }));
+
 	return (
 		<OrbitControls
-			args={[camera, gl.domElement]}
+			args={[three.camera, three.gl.domElement]}
 			enablePan={false}
 			enableRotate={false}
 			maxDistance={20}
 			minDistance={1}
+			target={[0, 0, 0]}
 		/>
 	);
 };

@@ -45,6 +45,6 @@ export function hslToHex(hsl: HslColor) {
 	return hslaToHex({ h: hsl.h, s: hsl.s, l: hsl.l, a: 1 });
 }
 
-export function colorschemeQueryKey(originalColor: HslaColor) {
+export function colorschemeQueryKey(_originalColor: HslaColor) {
 	return ['colorSchemes'];
 }

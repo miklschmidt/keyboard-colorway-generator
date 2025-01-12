@@ -1,6 +1,7 @@
+// Modified from drei's Center component
 import { Box3, Vector3, Sphere, type Object3D, type Group } from 'three';
 import * as React from 'react';
-import { type ThreeElements } from '@react-three/fiber';
+import { useFrame, type ThreeElements } from '@react-three/fiber';
 
 export type OnCenterCallbackProps = {
 	/** The next parent above <Center> */
@@ -35,11 +36,6 @@ export type CenterProps = {
 	disableZ?: boolean;
 	/** See https://threejs.org/docs/index.html?q=box3#api/en/math/Box3.setFromObject */
 	precise?: boolean;
-	/** Callback, fires in the useLayoutEffect phase, after measurement */
-	onCentered?: (props: OnCenterCallbackProps) => void;
-	/** Optional cacheKey to keep the component from recalculating on every render */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	cacheKey?: any;
 };
 
 export const Center = React.forwardRef<ThreeElements['group'], React.JSX.IntrinsicElements['group'] & CenterProps>(
@@ -56,9 +52,7 @@ export const Center = React.forwardRef<ThreeElements['group'], React.JSX.Intrins
 			bottom,
 			front,
 			back,
-			onCentered,
-			precise = true,
-			cacheKey = 0,
+			precise = false,
 			...props
 		},
 		fRef,
@@ -66,7 +60,7 @@ export const Center = React.forwardRef<ThreeElements['group'], React.JSX.Intrins
 		const ref = React.useRef<Group>(null!);
 		const outer = React.useRef<Group>(null!);
 		const inner = React.useRef<Group>(null!);
-		React.useLayoutEffect(() => {
+		useFrame(() => {
 			if (outer.current.matrixWorld == null) {
 				return;
 			}
@@ -88,24 +82,7 @@ export const Center = React.forwardRef<ThreeElements['group'], React.JSX.Intrins
 				disable || disableY ? 0 : -center.y + vAlign,
 				disable || disableZ ? 0 : -center.z + dAlign,
 			);
-
-			// Only fire onCentered if the bounding box has changed
-			if (typeof onCentered !== 'undefined') {
-				onCentered({
-					parent: ref.current.parent!,
-					container: ref.current,
-					width,
-					height,
-					depth,
-					boundingBox: box3,
-					boundingSphere: sphere,
-					center: center,
-					verticalAlignment: vAlign,
-					horizontalAlignment: hAlign,
-					depthAlignment: dAlign,
-				});
-			}
-		}, [cacheKey, onCentered, top, left, front, disable, disableX, disableY, disableZ, precise, right, bottom, back]);
+		});
 
 		React.useImperativeHandle(fRef, () => ref.current as ThreeElements['group'], []);
 

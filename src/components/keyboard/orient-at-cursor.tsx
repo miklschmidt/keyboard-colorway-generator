@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { Center } from '@/components/keyboard/center';
 
-export const OrientAtCursor = ({ children, cacheKey }: { children: React.ReactNode; cacheKey?: string }) => {
+export const OrientAtCursor = ({ children, name }: { children: React.ReactNode; name?: string }) => {
 	const mousePosition = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
 	const groupRef = useRef<ThreeElements['group']>(null);
 
@@ -31,7 +31,7 @@ export const OrientAtCursor = ({ children, cacheKey }: { children: React.ReactNo
 	});
 
 	return (
-		<Center ref={groupRef} rotation={[0, 0, 0, 'XYZ']} cacheKey={cacheKey}>
+		<Center ref={groupRef} rotation={[0, 0, 0, 'XYZ']} name={name} disableZ={true}>
 			{children}
 		</Center>
 	);

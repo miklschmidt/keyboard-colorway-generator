@@ -22,19 +22,16 @@ export const Keyboard = () => {
 	});
 
 	const ui = useSnapshot(uiState);
-	const cacheKey = isPending && loadedKeyboardId.current ? loadedKeyboardId.current : selectedKeyboard.id;
 	// We can do this because it's a proxy object and because valtio will only re-render dependent components when the value changes.
 	// Should we? Probably not. We only need this further up in the render tree because we're currently in a three.js scene, and we
 	// need to render a DOM component to show the loading state. This could also be achieved via a portal, which arguably isn't much better.
 	uiState.isKeyboardPending = isPending;
 
 	return (
-		<group position={[0, 0, -5]}>
-			<OrientAtCursor cacheKey={cacheKey}>
-				{data?.keys.map((key, index) => <Keycap key={index} keycap={key} />)}
-			</OrientAtCursor>
-			<OrientAtCursor cacheKey={cacheKey}>
-				<mesh position={[0, 0, -15]} rotation={[0, 0, 0]} receiveShadow>
+		<group position={[0, 0, -5]} name="keyboard">
+			<OrientAtCursor name="keys">{data?.keys.map((key, index) => <Keycap key={index} keycap={key} />)}</OrientAtCursor>
+			<OrientAtCursor name="background">
+				<mesh position={[0, 0, -0.1]} rotation={[0, 0, 0]} receiveShadow>
 					<planeGeometry args={[1000, 1000]} />
 					<meshStandardMaterial color={ui.darkMode ? '#222' : 'white'} />
 				</mesh>
