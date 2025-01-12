@@ -4,11 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import Saturation from '@uiw/react-color-saturation';
 import Hue from '@uiw/react-color-hue';
-import { hslaToHsva, type HslaColor, hsvaToHsla } from '@uiw/color-convert';
+import { hslaToHsva, type HslaColor, hsvaToHsla, hexToHsva, type HsvaColor } from '@uiw/color-convert';
 import { Palette } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { hslaToHex } from '@/lib/utils';
+import { Label } from '@radix-ui/react-label';
+import { Input } from '@/components/ui/input';
+import { useCallback, useRef, useState } from 'react';
 
 type ColorPickerProps = {
 	value: HslaColor;
@@ -17,6 +20,69 @@ type ColorPickerProps = {
 };
 
 export const ColorPicker = ({ value, onChange, id }: ColorPickerProps) => {
+	const [hex, setHex] = useState(hslaToHex(value));
+	const [hsla, setHsla] = useState(value);
+	const valueRef = useRef(value);
+	valueRef.current = value;
+
+	const updateLocalValues = useCallback((hsva: HsvaColor) => {
+		setHex(hslaToHex(hsvaToHsla(hsva)));
+		setHsla(hsvaToHsla(hsva));
+	}, []);
+
+	const onChangeH = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const newValue = { ...valueRef.current, h: Number(e.target.value) };
+			updateLocalValues(hslaToHsva(newValue));
+			onChange(newValue);
+		},
+		[onChange, updateLocalValues],
+	);
+
+	const onChangeS = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const newValue = { ...valueRef.current, s: Number(e.target.value) };
+			updateLocalValues(hslaToHsva(newValue));
+			onChange(newValue);
+		},
+		[onChange, updateLocalValues],
+	);
+
+	const onChangeL = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const newValue = { ...valueRef.current, l: Number(e.target.value) };
+			updateLocalValues(hslaToHsva(newValue));
+			onChange(newValue);
+		},
+		[onChange, updateLocalValues],
+	);
+
+	const onChangeHex = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			setHex(e.target.value);
+			const color = hexToHsva(e.target.value.replace('#', ''));
+			updateLocalValues(color);
+			onChange(hsvaToHsla(color));
+		},
+		[onChange, updateLocalValues],
+	);
+
+	const onChangeSaturation = useCallback(
+		(color: HsvaColor) => {
+			const hsla = hsvaToHsla(color);
+			updateLocalValues(color);
+			onChange(hsla);
+		},
+		[onChange, updateLocalValues],
+	);
+	const onChangeHue = useCallback(
+		(hue: { h: number }) => {
+			const hsla = { ...valueRef.current, h: hue.h };
+			updateLocalValues(hslaToHsva(hsla));
+			onChange(hsla);
+		},
+		[onChange, updateLocalValues],
+	);
 	return (
 		<Popover>
 			<PopoverTrigger asChild id={id}>
@@ -50,20 +116,35 @@ export const ColorPicker = ({ value, onChange, id }: ColorPickerProps) => {
 					</Button>
 				</div>
 			</PopoverTrigger>
-			<PopoverContent className="z-50 h-80 w-80">
+			<PopoverContent className="z-50 flex w-80 flex-col !gap-1.5">
 				<Saturation
 					hsva={hslaToHsva(value)}
-					className="w-full"
-					onChange={(newColor) => {
-						onChange({ ...value, ...hsvaToHsla(newColor) });
-					}}
+					className="focusable aspect-square !w-full flex-shrink-0 !rounded-md"
+					onChange={onChangeSaturation}
 				/>
 				<Hue
 					hue={value.h}
-					onChange={(newHue) => {
-						onChange({ ...value, ...newHue });
-					}}
+					className="focusable flex-shrink-0 rounded-md !bg-transparent [&>div]:!rounded-md"
+					onChange={onChangeHue}
 				/>
+				<div className="flex flex-col space-y-1.5">
+					<Label htmlFor="hex-input">Hex</Label>
+					<Input id="hex-input" value={hex} onChange={onChangeHex} />
+				</div>
+				<div className="grid grid-cols-3 gap-1.5">
+					<div className="flex flex-col space-y-1.5">
+						<Label htmlFor="color-input">H</Label>
+						<Input id="color-input" type="number" step="1" min={0} max={360} value={hsla.h} onChange={onChangeH} />
+					</div>
+					<div className="flex flex-col space-y-1.5">
+						<Label htmlFor="color-input">S</Label>
+						<Input id="color-input" type="number" step="1" min={0} max={100} value={hsla.s} onChange={onChangeS} />
+					</div>
+					<div className="flex flex-col space-y-1.5">
+						<Label htmlFor="color-input">L</Label>
+						<Input id="color-input" type="number" step="1" min={0} max={100} value={hsla.l} onChange={onChangeL} />
+					</div>
+				</div>
 			</PopoverContent>
 		</Popover>
 	);

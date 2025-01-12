@@ -25,15 +25,25 @@ export const useColorScheme = () => {
 
 				const quaternaryHslString = `${keyboardState.colorway.quaternary.h} ${keyboardState.colorway.quaternary.s}% ${keyboardState.colorway.quaternary.l}%`;
 				const quaternaryForegroundHslString = `${keyboardState.colorway.quaternaryForeground.h} ${keyboardState.colorway.quaternaryForeground.s}% ${keyboardState.colorway.quaternaryForeground.l}%`;
-
-				ref.current?.style.setProperty('--primary', primaryHslString);
-				ref.current?.style.setProperty('--primary-foreground', primaryForegroundHslString);
-				ref.current?.style.setProperty('--secondary', secondaryHslString);
-				ref.current?.style.setProperty('--secondary-foreground', secondaryForegroundHslString);
-				ref.current?.style.setProperty('--tertiary', tertiaryHslString);
-				ref.current?.style.setProperty('--tertiary-foreground', tertiaryForegroundHslString);
-				ref.current?.style.setProperty('--quaternary', quaternaryHslString);
-				ref.current?.style.setProperty('--quaternary-foreground', quaternaryForegroundHslString);
+				if (ref.current != null) {
+					ref.current.style.setProperty('--primary', primaryHslString);
+					ref.current.style.setProperty('--primary-foreground', primaryForegroundHslString);
+					ref.current.style.setProperty('--secondary', secondaryHslString);
+					ref.current.style.setProperty('--secondary-foreground', secondaryForegroundHslString);
+					ref.current.style.setProperty('--tertiary', tertiaryHslString);
+					ref.current.style.setProperty('--tertiary-foreground', tertiaryForegroundHslString);
+					ref.current.style.setProperty('--quaternary', quaternaryHslString);
+					ref.current.style.setProperty('--quaternary-foreground', quaternaryForegroundHslString);
+				} else {
+					document.body.style.setProperty('--primary', primaryHslString);
+					document.body.style.setProperty('--primary-foreground', primaryForegroundHslString);
+					document.body.style.setProperty('--secondary', secondaryHslString);
+					document.body.style.setProperty('--secondary-foreground', secondaryForegroundHslString);
+					document.body.style.setProperty('--tertiary', tertiaryHslString);
+					document.body.style.setProperty('--tertiary-foreground', tertiaryForegroundHslString);
+					document.body.style.setProperty('--quaternary', quaternaryHslString);
+					document.body.style.setProperty('--quaternary-foreground', quaternaryForegroundHslString);
+				}
 
 				animationFrameId.current = null;
 			});

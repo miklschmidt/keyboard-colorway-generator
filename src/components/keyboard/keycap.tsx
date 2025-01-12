@@ -2,7 +2,7 @@
 import { type KleKey } from '@kcf-hub/kle-serial';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import { extend, useFrame } from '@react-three/fiber';
+import { extend, useFrame, useThree } from '@react-three/fiber';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry';
 import { useMemo, useRef } from 'react';
@@ -52,8 +52,13 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 
 	const colorway = useSnapshot(keyboardState.colorway);
 	const settings = useSnapshot(keyboardState.settings);
+	const { gl } = useThree();
 
-	const isPressed = useKeyPress(keycap.labels);
+	const { isPressed } = useKeyPress(
+		keycap.labels,
+		keycap.x < 8 ? KeyboardEvent.DOM_KEY_LOCATION_LEFT : KeyboardEvent.DOM_KEY_LOCATION_RIGHT,
+		gl.domElement,
+	);
 
 	useFrame(({ clock }) => {
 		// Animate keycap
@@ -99,7 +104,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 						]}
 					/>
 					<motion.meshStandardMaterial
-						initial={{ color: 'white' }}
+						initial={{ color: '#ffffff' }}
 						animate={{
 							color: meta.isModifierKey
 								? hslaToHex(colorway.primary)
@@ -117,7 +122,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 							<Text args={[labels[0]?.trim() || '', { font: fonts.mono, size: 0.15, depth: 0.01 }]} />
 
 							<motion.meshStandardMaterial
-								initial={{ color: 'black' }}
+								initial={{ color: '#000000' }}
 								animate={{
 									color: meta.isModifierKey
 										? hslaToHex(colorway.primaryForeground)
@@ -131,7 +136,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 							<Text args={[labels[1]?.trim() || '', { font: fonts.mono, size: 0.15, depth: 0.01 }]} />
 
 							<motion.meshStandardMaterial
-								initial={{ color: 'black' }}
+								initial={{ color: '#000000' }}
 								animate={{
 									color: meta.isModifierKey
 										? hslaToHex(colorway.primaryForeground)
@@ -152,7 +157,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 						/>
 
 						<motion.meshStandardMaterial
-							initial={{ color: 'black' }}
+							initial={{ color: '#000000' }}
 							animate={{
 								color: meta.isModifierKey
 									? hslaToHex(colorway.primaryForeground)

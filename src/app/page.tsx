@@ -9,11 +9,10 @@ import { twJoin } from 'tailwind-merge';
 const queryClient = new QueryClient();
 
 export default function HomePage() {
-	const ref = useColorScheme();
+	useColorScheme();
 	return (
 		<QueryClientProvider client={queryClient}>
 			<main
-				ref={ref}
 				className={twJoin(
 					'bg-background flex h-screen max-h-screen w-full flex-col items-stretch justify-center overflow-hidden text-white',
 				)}

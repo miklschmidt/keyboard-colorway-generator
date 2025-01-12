@@ -61,7 +61,7 @@ export function ColorSchemeSelector({
 	}, [colorSchemes]);
 
 	const trigger = (
-		<Button variant="outline" className="justify-start pl-2">
+		<Button variant="outline" className="focusable justify-start pl-2">
 			{isFetching ? <Loading size="sm" className="mr-2 h-4 w-4" /> : <SwatchBook className="mr-2 h-4 w-4" />}
 			{isPending ? (
 				<div className="flex flex-1 items-center justify-start gap-2">
