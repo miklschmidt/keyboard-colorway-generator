@@ -75,6 +75,7 @@ DX:
 - [ ] Add keycap selection to change the properties of an individual keycap
 - [ ] Add keyboard simulation
 - [ ] Persist settings in local storage, add import / export.
-- [ ] Support all 9 legend positions
+- [ ] Support all 12 legend positions
+- [ ] Support non-rectangular keys
 - [ ] Add more keyboard layouts
 - [ ] Add KLE json upload.
