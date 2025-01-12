@@ -2,11 +2,10 @@ import { z } from 'zod';
 
 export const HexSchema = z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
 
-// Would've liked to validate Hue is between 0-360, but palettespro is not
-// afraid to return negative angles, guess it makes the math easier.
-// TODO: Transform the Hue so that it's between 0-360
+// Palettespro is not afraid to return negative angles, guess it makes the math easier.
+// We normalize the hue to 0-360 to ensure it's a valid value.
 const HSLSchema = z.object({
-	h: z.number(), // Hue: 0-360
+	h: z.number().transform((h) => ((h % 360) + 360) % 360), // Hue: normalized to 0-360
 	s: z.number().min(0).max(100), // Saturation: 0-100
 	l: z.number().min(0).max(100), // Lightness: 0-100
 });
