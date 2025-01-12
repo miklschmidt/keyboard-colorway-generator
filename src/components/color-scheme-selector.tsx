@@ -7,20 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-	ColorHarmonyResponseSchema,
-	ColorSchemeKeySchema,
-	type ColorHarmonyResponse,
-	type ColorScheme,
-} from '@/zods/palettespro';
+import { ColorSchemeKeySchema, type ColorHarmonyResponse, type ColorScheme } from '@/zods/palettespro';
 import { Loading } from '@/components/loading';
-import { useIsMutating, useMutationState } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { SwatchBook } from 'lucide-react';
-import { camelCaseToTitleCase, colorschemeMutationKey } from '@/lib/utils';
+import { camelCaseToTitleCase } from '@/lib/utils';
 import { logger } from '@/lib/logger';
-import { useSnapshot } from 'valtio';
-import { keyboardState } from '@/state/keyboard';
 
 export type ColorSchemeSelection = {
 	value: keyof ColorHarmonyResponse;
@@ -30,53 +22,52 @@ export type ColorSchemeSelection = {
 
 type ColorSchemeProps = {
 	id?: string;
+	colorSchemes: ColorHarmonyResponse | null;
+	isPending: boolean;
+	isFetching: boolean;
 	setColorScheme: (colorScheme: ColorSchemeSelection | null) => void;
 	selectedColorScheme: ColorSchemeSelection | null;
 };
 
-export function ColorSchemeSelector({ setColorScheme, selectedColorScheme, id }: ColorSchemeProps) {
+export function ColorSchemeSelector({
+	setColorScheme,
+	selectedColorScheme,
+	colorSchemes,
+	isPending,
+	isFetching,
+	id,
+}: ColorSchemeProps) {
 	const [open, setOpen] = React.useState(false);
 	const isDesktop = useMediaQuery('(min-width: 768px)');
 
-	const { originalColor } = useSnapshot(keyboardState);
-	const mutationKey = useMemo(() => colorschemeMutationKey(originalColor), [originalColor]);
-	const isLoading = useIsMutating({ mutationKey: mutationKey }) > 0;
-
-	const colorSchemesMutations = useMutationState({
-		filters: { mutationKey: mutationKey, status: 'success' },
-		select: (mutation) => {
-			if (mutation.state.data == null) {
-				return [];
-			}
-			const state = ColorHarmonyResponseSchema.safeParse(mutation.state.data);
-			if (!state.success) {
-				return [];
-			}
-			return Object.keys(state.data)
-				.map((k) => {
-					const key = ColorSchemeKeySchema.safeParse(k);
-					if (!key.success) {
-						logger.error('Invalid color scheme key', k);
-						return null;
-					}
-					return {
-						value: key.data,
-						label: camelCaseToTitleCase(key.data),
-						colors: state.data[key.data],
-					};
-				})
-				.filter((scheme) => scheme !== null);
-		},
-	});
-
-	const colorSchemes = useMemo(() => {
-		return colorSchemesMutations.length > 0 ? (colorSchemesMutations[colorSchemesMutations.length - 1] ?? []) : [];
-	}, [colorSchemesMutations]);
+	const colorSchemeValues = useMemo(() => {
+		if (colorSchemes == null) {
+			return [];
+		}
+		return Object.keys(colorSchemes)
+			.map((k) => {
+				const key = ColorSchemeKeySchema.safeParse(k);
+				if (!key.success) {
+					logger.error('Invalid color scheme key', k);
+					return null;
+				}
+				return {
+					value: key.data,
+					label: camelCaseToTitleCase(key.data),
+					colors: colorSchemes[key.data],
+				};
+			})
+			.filter((scheme) => scheme !== null);
+	}, [colorSchemes]);
 
 	const trigger = (
 		<Button variant="outline" className="justify-start pl-2">
-			<SwatchBook className="mr-2 h-4 w-4" />
-			{selectedColorScheme ? (
+			{isFetching ? <Loading size="sm" className="mr-2 h-4 w-4" /> : <SwatchBook className="mr-2 h-4 w-4" />}
+			{isPending ? (
+				<div className="flex flex-1 items-center justify-start gap-2">
+					<span>Fetching color schemes..</span>
+				</div>
+			) : selectedColorScheme ? (
 				<div className="flex flex-1 items-center justify-between gap-2">
 					<span>{selectedColorScheme.label}</span>
 					<ColorSchemeBar colorScheme={selectedColorScheme} />
@@ -95,8 +86,8 @@ export function ColorSchemeSelector({ setColorScheme, selectedColorScheme, id }:
 				</PopoverTrigger>
 				<PopoverContent className="w-[300px] p-0" align="start">
 					<ColorSchemeList
-						isLoading={isLoading}
-						colorSchemes={colorSchemes}
+						isFetching={isFetching}
+						colorSchemes={colorSchemeValues}
 						setOpen={setOpen}
 						setSelectedColorScheme={setColorScheme}
 					/>
@@ -113,8 +104,8 @@ export function ColorSchemeSelector({ setColorScheme, selectedColorScheme, id }:
 			<DrawerContent>
 				<div className="mt-4 border-t">
 					<ColorSchemeList
-						isLoading={isLoading}
-						colorSchemes={colorSchemes}
+						isFetching={isFetching}
+						colorSchemes={colorSchemeValues}
 						setOpen={setOpen}
 						setSelectedColorScheme={setColorScheme}
 					/>
@@ -141,12 +132,12 @@ function ColorSchemeBar({ colorScheme }: { colorScheme: ColorSchemeSelection }) 
 function ColorSchemeList({
 	setOpen,
 	colorSchemes,
-	isLoading,
+	isFetching,
 	setSelectedColorScheme,
 }: {
 	setOpen: (open: boolean) => void;
 	colorSchemes: ColorSchemeSelection[];
-	isLoading: boolean;
+	isFetching: boolean;
 	setSelectedColorScheme: (colorScheme: ColorSchemeSelection | null) => void;
 }) {
 	const onSelect = useCallback(
@@ -165,7 +156,7 @@ function ColorSchemeList({
 		<Command>
 			<CommandInput placeholder="Filter color schemes..." />
 			<CommandList>
-				{isLoading ? (
+				{isFetching ? (
 					<CommandEmpty className="flex items-center gap-2">
 						<Loading size="sm" /> Fetching color schemes...
 					</CommandEmpty>

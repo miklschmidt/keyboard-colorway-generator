@@ -9,6 +9,7 @@ import { useMemo, useRef } from 'react';
 import { type MeshStandardMaterial, type Group } from 'three';
 import { keyboardState } from '@/state/keyboard';
 import { hslaToHex } from '@/lib/utils';
+import { isAlphaKey, isModifierKey, isSpaceKey } from '@/lib/keyboard';
 
 // Extend TextGeometry so it's available as a JSX element
 const Text = extend(TextGeometry);
@@ -17,6 +18,7 @@ const Text = extend(TextGeometry);
 const RoundedBox = extend(RoundedBoxGeometry);
 
 const fontLoader = new FontLoader();
+
 export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 	const { data: fonts } = useSuspenseQuery({
 		queryKey: ['font'],
@@ -35,21 +37,31 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 		},
 	});
 
+	const meta = useMemo(() => {
+		return {
+			isModifierKey: isModifierKey(keycap.labels),
+			isAlphaKey: isAlphaKey(keycap.labels),
+			isSpaceKey: isSpaceKey(keycap.labels),
+		};
+	}, [keycap.labels]);
+
 	const keycapRef = useRef<Group>(null);
 	const keycapMaterialRef = useRef<MeshStandardMaterial>(null);
 	const keycapTextMaterialRef = useRef<MeshStandardMaterial>(null);
 
 	useFrame(({ clock }) => {
 		// Update keycap color
-		if (keycap.labels.length === 0) {
-			return;
-		}
-		if (keycap.labels.length === 1 && (keycap.labels[0]?.length ?? 0) > 1) {
+		if (meta.isModifierKey) {
 			keycapMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.primary));
 			keycapTextMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.primaryForeground));
-		} else {
+		}
+		if (meta.isAlphaKey) {
 			keycapMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.secondary));
 			keycapTextMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.secondaryForeground));
+		}
+		if (meta.isSpaceKey) {
+			keycapMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.tertiary));
+			keycapTextMaterialRef.current?.color.set(hslaToHex(keyboardState.colorway.tertiaryForeground));
 		}
 
 		// Animate keycap

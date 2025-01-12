@@ -18,7 +18,7 @@ const LoadingOverlay = () => {
 				ui.isKeyboardPending ? 'opacity-100' : 'opacity-0',
 			)}
 		>
-			<Loading />
+			<Loading size="xl" />
 		</div>
 	);
 };

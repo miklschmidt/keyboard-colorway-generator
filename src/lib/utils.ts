@@ -45,7 +45,6 @@ export function hslToHex(hsl: HslColor) {
 	return hslaToHex({ h: hsl.h, s: hsl.s, l: hsl.l, a: 1 });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function colorschemeMutationKey(originalColor: HslaColor) {
+export function colorschemeQueryKey(originalColor: HslaColor) {
 	return ['colorSchemes'];
 }
