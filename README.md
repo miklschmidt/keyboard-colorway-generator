@@ -88,6 +88,7 @@ DX:
 - [x] Add focus styles
 - [x] Add different keyboard colorway applicators (how colors are applied to individual key types)
 - [x] Add keyboard simulation
+- [ ] Finish responsiveness, currently only works on desktop display sizes.
 - [ ] Less janky transition between keyboard layouts
 - [ ] Add keycap selection to change the properties of an individual keycap
 - [ ] Persist settings in local storage, add import / export.
