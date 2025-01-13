@@ -85,10 +85,11 @@ DX:
 
 ## TODO
 
-- [ ] Add focus styles
-- [ ] Add different keyboard colorway applicators (how colors are applied to individual key types)
+- [x] Add focus styles
+- [x] Add different keyboard colorway applicators (how colors are applied to individual key types)
+- [x] Add keyboard simulation
+- [ ] Less janky transition between keyboard layouts
 - [ ] Add keycap selection to change the properties of an individual keycap
-- [ ] Add keyboard simulation
 - [ ] Persist settings in local storage, add import / export.
 - [ ] Support all 12 legend positions
 - [ ] Support non-rectangular keys
