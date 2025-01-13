@@ -39,7 +39,15 @@ export const Keyboard = () => {
 	return (
 		<group position={[0, 0, -5]} name="keyboard">
 			<OrientAtCursor name="keys">
-				{data?.keys.map((key, index) => <Keycap key={index} keycap={key} keyboardWidth={keyboardWidth} />)}
+				{data?.keys.map((keycap) => {
+					let key = keycap.labels.join('-');
+					const similarKeys = data?.keys.filter((k) => k.labels.join('-') === key);
+					const similarKeyIndex = similarKeys.findIndex((k) => k === keycap);
+					if (similarKeys.length > 1 && similarKeyIndex > 0) {
+						key = `${key}-${similarKeyIndex}`;
+					}
+					return <Keycap key={key} keycap={keycap} keyboardWidth={keyboardWidth} />;
+				})}
 			</OrientAtCursor>
 			<OrientAtCursor name="background">
 				<mesh position={[0, 0, -0.1]} rotation={[0, 0, 0]} receiveShadow>

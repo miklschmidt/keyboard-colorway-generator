@@ -115,7 +115,7 @@ export const Keycap = ({ keycap, keyboardWidth }: { keycap: KleKey; keyboardWidt
 	return (
 		<motion.group
 			initial={{ rotateZ: 0, x: 0, z: 0 }}
-			transition={{ duration: 0.05 }}
+			transition={{ type: 'spring', stiffness: 600, damping: 20, mass: 0.5 }}
 			animate={{
 				rotateZ: rotation,
 				x: rotation === 0 ? 0 : rotation < 0 ? -1 : 1,
@@ -124,6 +124,7 @@ export const Keycap = ({ keycap, keyboardWidth }: { keycap: KleKey; keyboardWidt
 		>
 			<motion.group
 				initial={{ x: 0, y: 0, scale: 0.5, z: -0.1 }}
+				transition={{ type: 'spring', stiffness: 600, damping: 40, mass: 2 }}
 				animate={{
 					x: keycap.x + keycap.width / 2,
 					y: 5 - keycap.y,
@@ -144,7 +145,7 @@ export const Keycap = ({ keycap, keyboardWidth }: { keycap: KleKey; keyboardWidt
 						]}
 					/>
 					<motion.meshStandardMaterial
-						initial={{ color: '#ffffff' }}
+						initial={{ color: baseColor }}
 						animate={{
 							color: baseColor,
 						}}
@@ -154,21 +155,21 @@ export const Keycap = ({ keycap, keyboardWidth }: { keycap: KleKey; keyboardWidt
 				{/* Text */}
 				{labels.length == 2 ? (
 					<>
-						<mesh position={[-keycap.width / 2 + 0.3, keycap.height / 2 - 0.35, 0.31]}>
+						<motion.mesh position={[-keycap.width / 2 + 0.3, keycap.height / 2 - 0.35, 0.31]}>
 							<Text args={[labels[0]?.trim() || '', { font: fonts.mono, size: 0.15, depth: 0.01 }]} />
 
 							<motion.meshStandardMaterial
-								initial={{ color: '#000000' }}
+								initial={{ color: foregroundColor }}
 								animate={{
 									color: foregroundColor,
 								}}
 							/>
-						</mesh>
+						</motion.mesh>
 						<mesh position={[-keycap.width / 2 + 0.3, keycap.height / 2 - 0.65, 0.31]}>
 							<Text args={[labels[1]?.trim() || '', { font: fonts.mono, size: 0.15, depth: 0.01 }]} />
 
 							<motion.meshStandardMaterial
-								initial={{ color: '#000000' }}
+								initial={{ color: foregroundColor }}
 								animate={{
 									color: foregroundColor,
 								}}
@@ -185,7 +186,7 @@ export const Keycap = ({ keycap, keyboardWidth }: { keycap: KleKey; keyboardWidt
 						/>
 
 						<motion.meshStandardMaterial
-							initial={{ color: '#000000' }}
+							initial={{ color: foregroundColor }}
 							animate={{
 								color: foregroundColor,
 							}}
