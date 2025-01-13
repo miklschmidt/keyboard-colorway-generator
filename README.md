@@ -46,7 +46,7 @@ Data fetching:
 
 - [@tanstack/react-query](https://github.com/TanStack/query)
 
-UI components:
+UI primitives/components:
 
 - [shadcn/ui](https://ui.shadcn.com/)
 - [class variance authority](https://www.npmjs.com/package/class-variance-authority)
@@ -54,6 +54,16 @@ UI components:
 - [lucide-react](https://lucide.dev/)
 - [geist](https://www.npmjs.com/package/geist)
 - [radix-ui](https://www.radix-ui.com/primitives)
+- [@uiw/react-color-saturation](https://www.npmjs.com/package/@uiw/react-color-saturation)
+- [@uiw/react-color-hue](https://www.npmjs.com/package/@uiw/react-color-hue)
+- [@uiw/color-convert](https://www.npmjs.com/package/@uiw/color-convert)
+- [color-namer](https://www.npmjs.com/package/color-namer)
+- [cmdk](https://www.npmjs.com/package/cmdk)
+- [vaul](https://www.npmjs.com/package/vaul)
+
+UI animation:
+
+- [framer-motion-3d](https://www.npmjs.com/package/framer-motion-3d)
 
 Styling:
 
@@ -61,11 +71,16 @@ Styling:
 - [tailwindcss-animate](https://github.com/jambonrose/tailwindcss-animate)
 - [tailwind-scrollbar](https://github.com/jambonrose/tailwind-scrollbar)
 
+Validation / E2E typesafety:
+
+- [zod](https://zod.dev/)
+
 DX:
 
 - [eslint](https://eslint.org/)
 - [prettier](https://prettier.io/)
 - [typescript](https://www.typescriptlang.org/)
+- [tslog](https://github.com/fullstack-build/tslog)
 
 
 ## TODO

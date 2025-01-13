@@ -9,22 +9,22 @@ export const useColorScheme = () => {
 	const animationFrameId = useRef<number | null>(null);
 	// Update CSS variables used by the interface when colors change
 	useLayoutEffect(() => {
-		const unsubscribe = subscribe(keyboardState.colorway, () => {
+		const unsubscribe = subscribe(keyboardState.colors, () => {
 			if (animationFrameId.current != null) {
 				cancelAnimationFrame(animationFrameId.current);
 			}
 			animationFrameId.current = requestAnimationFrame(() => {
-				const primaryHslString = `${keyboardState.colorway.primary.h} ${keyboardState.colorway.primary.s}% ${keyboardState.colorway.primary.l}%`;
-				const primaryForegroundHslString = `${keyboardState.colorway.primaryForeground.h} ${keyboardState.colorway.primaryForeground.s}% ${keyboardState.colorway.primaryForeground.l}%`;
+				const primaryHslString = `${keyboardState.colors.primary.h} ${keyboardState.colors.primary.s}% ${keyboardState.colors.primary.l}%`;
+				const primaryForegroundHslString = `${keyboardState.colors.primaryForeground.h} ${keyboardState.colors.primaryForeground.s}% ${keyboardState.colors.primaryForeground.l}%`;
 
-				const secondaryHslString = `${keyboardState.colorway.secondary.h} ${keyboardState.colorway.secondary.s}% ${keyboardState.colorway.secondary.l}%`;
-				const secondaryForegroundHslString = `${keyboardState.colorway.secondaryForeground.h} ${keyboardState.colorway.secondaryForeground.s}% ${keyboardState.colorway.secondaryForeground.l}%`;
+				const secondaryHslString = `${keyboardState.colors.secondary.h} ${keyboardState.colors.secondary.s}% ${keyboardState.colors.secondary.l}%`;
+				const secondaryForegroundHslString = `${keyboardState.colors.secondaryForeground.h} ${keyboardState.colors.secondaryForeground.s}% ${keyboardState.colors.secondaryForeground.l}%`;
 
-				const tertiaryHslString = `${keyboardState.colorway.tertiary.h} ${keyboardState.colorway.tertiary.s}% ${keyboardState.colorway.tertiary.l}%`;
-				const tertiaryForegroundHslString = `${keyboardState.colorway.tertiaryForeground.h} ${keyboardState.colorway.tertiaryForeground.s}% ${keyboardState.colorway.tertiaryForeground.l}%`;
+				const tertiaryHslString = `${keyboardState.colors.tertiary.h} ${keyboardState.colors.tertiary.s}% ${keyboardState.colors.tertiary.l}%`;
+				const tertiaryForegroundHslString = `${keyboardState.colors.tertiaryForeground.h} ${keyboardState.colors.tertiaryForeground.s}% ${keyboardState.colors.tertiaryForeground.l}%`;
 
-				const quaternaryHslString = `${keyboardState.colorway.quaternary.h} ${keyboardState.colorway.quaternary.s}% ${keyboardState.colorway.quaternary.l}%`;
-				const quaternaryForegroundHslString = `${keyboardState.colorway.quaternaryForeground.h} ${keyboardState.colorway.quaternaryForeground.s}% ${keyboardState.colorway.quaternaryForeground.l}%`;
+				const quaternaryHslString = `${keyboardState.colors.quaternary.h} ${keyboardState.colors.quaternary.s}% ${keyboardState.colors.quaternary.l}%`;
+				const quaternaryForegroundHslString = `${keyboardState.colors.quaternaryForeground.h} ${keyboardState.colors.quaternaryForeground.s}% ${keyboardState.colors.quaternaryForeground.l}%`;
 				if (ref.current != null) {
 					ref.current.style.setProperty('--primary', primaryHslString);
 					ref.current.style.setProperty('--primary-foreground', primaryForegroundHslString);

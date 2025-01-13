@@ -4,10 +4,10 @@ import { cva, type VariantProps } from 'class-variance-authority';
 const variants = cva('inline-block', {
 	variants: {
 		size: {
-			sm: 'h-5 w-5',
-			md: 'h-8 w-8',
-			lg: 'h-12 w-12',
-			xl: 'h-24 w-24',
+			sm: 'size-5',
+			md: 'size-8',
+			lg: 'size-12',
+			xl: 'size-24',
 		},
 	},
 	defaultVariants: {

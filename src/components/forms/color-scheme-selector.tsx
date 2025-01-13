@@ -11,7 +11,7 @@ import { ColorSchemeKeySchema, type ColorHarmonyResponse, type ColorScheme } fro
 import { Loading } from '@/components/loading';
 import { useCallback, useMemo } from 'react';
 import { SwatchBook } from 'lucide-react';
-import { camelCaseToTitleCase } from '@/lib/utils';
+import { camelCaseToTitleCase, cn } from '@/lib/utils';
 import { logger } from '@/lib/logger';
 
 export type ColorSchemeSelection = {
@@ -61,8 +61,8 @@ export function ColorSchemeSelector({
 	}, [colorSchemes]);
 
 	const trigger = (
-		<Button variant="outline" className="focusable justify-start pl-2">
-			{isFetching ? <Loading size="sm" className="mr-2 h-4 w-4" /> : <SwatchBook className="mr-2 h-4 w-4" />}
+		<Button variant="outline" className="@container focusable justify-start px-2">
+			{isFetching ? <Loading size="sm" className="mr-2 size-4" /> : <SwatchBook className="mr-2 size-4" />}
 			{isPending ? (
 				<div className="flex flex-1 items-center justify-start gap-2">
 					<span>Fetching color schemes..</span>
@@ -115,13 +115,13 @@ export function ColorSchemeSelector({
 	);
 }
 
-function ColorSchemeBar({ colorScheme }: { colorScheme: ColorSchemeSelection }) {
+function ColorSchemeBar({ colorScheme, className }: { colorScheme: ColorSchemeSelection; className?: string }) {
 	return (
-		<div className="inline-flex overflow-hidden rounded-full">
+		<div className={cn('inline-flex overflow-hidden rounded-full', className)}>
 			{colorScheme.colors.map((color) => (
 				<div
 					key={`${color.hsl.h}-${color.hsl.s}-${color.hsl.l}`}
-					className="h-4 w-4"
+					className="size-4"
 					style={{ backgroundColor: `hsl(${color.hsl.h}, ${color.hsl.s}%, ${color.hsl.l}%)` }}
 				></div>
 			))}

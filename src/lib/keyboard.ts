@@ -66,10 +66,12 @@ export const isAlphaKey = (labels: string[]) => {
 		);
 };
 
+export const isNumRowKey = (labels: string[]) => {
+	return labels.some((label) => label.match(/^[0-9\-\+]$/) != null);
+};
+
 export const isSpecialKey = (labels: string[]) => {
-	return labels.every(
-		(label) => label.startsWith('f') || label.startsWith('esc') || label.startsWith('tab') || label.startsWith('enter'),
-	);
+	return labels.map((l) => l.toLocaleLowerCase()).some((label) => label.startsWith('esc') || label.startsWith('enter'));
 };
 
 export const isSpaceKey = (labels: string[]) => {
@@ -108,6 +110,8 @@ const kleKeyToBrowserKeyMap = {
 	scrolllock: 'scroll lock',
 };
 
+type KLEKey = keyof typeof kleKeyToBrowserKeyMap;
+
 export const kleKeyToBrowserKey = (key: string) => {
-	return kleKeyToBrowserKeyMap[key.toLocaleLowerCase() as keyof typeof kleKeyToBrowserKeyMap] || key;
+	return kleKeyToBrowserKeyMap[key.toLocaleLowerCase() as KLEKey] || key;
 };

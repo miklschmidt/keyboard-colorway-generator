@@ -16,6 +16,7 @@ export function objMerge<T extends object>(target: T, source: Partial<T>) {
 			throw new Error(`Key ${key} not found in target, objects are not compatible`);
 		}
 	});
+	return target;
 }
 
 // Algorithm from https://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef
@@ -25,10 +26,10 @@ export function colorContrastRatio(c1: HslColor, c2: HslColor) {
 	return (l1 + 0.05) / (l2 + 0.05);
 }
 
-export function getForegroundColor(c1: HslColor): HslColor {
+export function getForegroundColor(c1: HslColor | HslaColor): HslaColor {
 	const contrastRatioBlack = colorContrastRatio(c1, { h: 0, s: 0, l: 0 });
 	const contrastRatioWhite = colorContrastRatio({ h: 0, s: 0, l: 100 }, c1) + 3;
-	return contrastRatioBlack > contrastRatioWhite ? { h: 0, s: 0, l: 0 } : { h: 0, s: 0, l: 100 };
+	return contrastRatioBlack > contrastRatioWhite ? { h: 0, s: 0, l: 0, a: 1 } : { h: 0, s: 0, l: 100, a: 1 };
 }
 
 export function camelCaseToTitleCase(str: string) {

@@ -17,7 +17,6 @@ export async function getColorScheme(color: HexColor) {
 		const data = await response.json();
 		try {
 			const result = ColorHarmonyResponseSchema.parse(data);
-			logger.info('Successfully fetched color scheme', result.analogous);
 			return result;
 		} catch (error) {
 			logger.error('Invalid color scheme response', data, error);

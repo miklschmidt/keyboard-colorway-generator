@@ -1,7 +1,8 @@
 'use client';
-import { ColorwaySettings } from '@/components/colorway-settings';
+import { ColorschemeSettings } from '@/components/color-scheme-settings';
 import { KeyboardSettings } from '@/components/keyboard-settings';
 import { ThreeScene } from '@/components/keyboard/three-scene';
+import { KeycapSettings } from '@/components/colorway-settings';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { twJoin } from 'tailwind-merge';
@@ -19,8 +20,8 @@ export default function HomePage() {
 			>
 				<div className="grid flex-grow-0 grid-cols-3 gap-4 p-4">
 					<KeyboardSettings />
-					<ColorwaySettings />
-					<KeyboardSettings />
+					<ColorschemeSettings />
+					<KeycapSettings />
 				</div>
 				<div className="flex flex-1 overflow-hidden">
 					<ThreeScene />

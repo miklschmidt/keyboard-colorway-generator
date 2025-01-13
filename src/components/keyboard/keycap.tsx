@@ -8,11 +8,11 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { useMemo, useRef } from 'react';
 import { type Group } from 'three';
 import { keyboardState } from '@/state/keyboard';
-import { hslaToHex } from '@/lib/utils';
-import { isAlphaKey, isModifierKey, isSpaceKey } from '@/lib/keyboard';
+import { getForegroundColor, hslaToHex } from '@/lib/utils';
+import { isAlphaKey, isModifierKey, isNumRowKey, isSpaceKey, isSpecialKey } from '@/lib/keyboard';
 import { motion } from 'framer-motion-3d';
 import { useSnapshot } from 'valtio/react';
-import { useKeyPress } from '@/hooks/use-keypress';
+import { useKeyPressState } from '@/hooks/use-keypress-state';
 
 // Extend TextGeometry so it's available as a JSX element
 const Text = extend(TextGeometry);
@@ -22,7 +22,7 @@ const RoundedBox = extend(RoundedBoxGeometry);
 
 const fontLoader = new FontLoader();
 
-export const Keycap = ({ keycap }: { keycap: KleKey }) => {
+export const Keycap = ({ keycap, keyboardWidth }: { keycap: KleKey; keyboardWidth: number }) => {
 	const { data: fonts } = useSuspenseQuery({
 		queryKey: ['font'],
 		queryFn: async () => {
@@ -44,20 +44,21 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 		return {
 			isModifierKey: isModifierKey(keycap.labels),
 			isAlphaKey: isAlphaKey(keycap.labels),
+			isNumberKey: isNumRowKey(keycap.labels),
 			isSpaceKey: isSpaceKey(keycap.labels),
+			isSpecialKey: isSpecialKey(keycap.labels),
 		};
 	}, [keycap.labels]);
 
 	const keycapRef = useRef<Group>(null);
 
-	const colorway = useSnapshot(keyboardState.colorway);
-	const settings = useSnapshot(keyboardState.settings);
+	const { colorwayMode, settings, colorway, colorSchemeColorCount, colors } = useSnapshot(keyboardState);
 	const { gl } = useThree();
 
-	const { isPressed } = useKeyPress(
+	const { isPressed } = useKeyPressState(
 		keycap.labels,
-		keycap.x < 8 ? KeyboardEvent.DOM_KEY_LOCATION_LEFT : KeyboardEvent.DOM_KEY_LOCATION_RIGHT,
-		gl.domElement,
+		keycap.x < keyboardWidth / 2 ? KeyboardEvent.DOM_KEY_LOCATION_LEFT : KeyboardEvent.DOM_KEY_LOCATION_RIGHT,
+		settings.mirrorInput ? gl.domElement : undefined,
 	);
 
 	useFrame(({ clock }) => {
@@ -76,11 +77,50 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 	const rotation = keycap.rotation_angle !== 0 ? keycap.rotation_angle * (Math.PI / 180) * -1 : 0;
 	const labels = keycap.labels.filter((l) => l != '');
 
+	const { baseColor, foregroundColor } = useMemo(() => {
+		/* eslint-disable valtio/state-snapshot-rule */
+		let baseColor = meta.isModifierKey
+			? meta.isSpecialKey
+				? hslaToHex(colorway.special)
+				: hslaToHex(colorway.modifiers)
+			: meta.isAlphaKey
+				? meta.isNumberKey
+					? hslaToHex(colorway.numbers)
+					: hslaToHex(colorway.alphas)
+				: hslaToHex(colorway.spacebar);
+
+		let foregroundColor = meta.isModifierKey
+			? meta.isSpecialKey
+				? hslaToHex(colorway.specialForeground)
+				: hslaToHex(colorway.modifiersForeground)
+			: meta.isAlphaKey
+				? meta.isNumberKey
+					? hslaToHex(colorway.numbersForeground)
+					: hslaToHex(colorway.alphasForeground)
+				: hslaToHex(colorway.spacebarForeground);
+
+		if (colorwayMode === 'wave') {
+			const diagonalPosition = (keycap.x + keycap.y) / Math.SQRT2;
+			const keycapOffsetPercentage = Math.floor((diagonalPosition / keyboardWidth) * 100);
+			const keycapOffset = Math.round((keycapOffsetPercentage / 100) * colorSchemeColorCount);
+			const key: keyof typeof colors =
+				keycapOffset < 1 ? 'primary' : keycapOffset == 1 ? 'secondary' : keycapOffset == 2 ? 'tertiary' : 'quaternary';
+			baseColor = hslaToHex(colors[key]);
+			foregroundColor = hslaToHex(getForegroundColor(colors[key]));
+		}
+		/* eslint-enable valtio/state-snapshot-rule */
+		return { baseColor, foregroundColor };
+	}, [colorwayMode, colorway, meta, keyboardWidth, colorSchemeColorCount, colors, keycap.x, keycap.y]);
+
 	return (
 		<motion.group
 			initial={{ rotateZ: 0, x: 0, z: 0 }}
 			transition={{ duration: 0.05 }}
-			animate={{ rotateZ: rotation, x: rotation === 0 ? 0 : rotation < 0 ? -1 : 1, z: isPressed ? -0.15 : 0 }}
+			animate={{
+				rotateZ: rotation,
+				x: rotation === 0 ? 0 : rotation < 0 ? -1 : 1,
+				z: isPressed && settings.mirrorInput ? -0.15 : 0,
+			}}
 		>
 			<motion.group
 				initial={{ x: 0, y: 0, scale: 0.5, z: -0.1 }}
@@ -106,11 +146,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 					<motion.meshStandardMaterial
 						initial={{ color: '#ffffff' }}
 						animate={{
-							color: meta.isModifierKey
-								? hslaToHex(colorway.primary)
-								: meta.isAlphaKey
-									? hslaToHex(colorway.secondary)
-									: hslaToHex(colorway.tertiary),
+							color: baseColor,
 						}}
 					/>
 				</mesh>
@@ -124,11 +160,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 							<motion.meshStandardMaterial
 								initial={{ color: '#000000' }}
 								animate={{
-									color: meta.isModifierKey
-										? hslaToHex(colorway.primaryForeground)
-										: meta.isAlphaKey
-											? hslaToHex(colorway.secondaryForeground)
-											: hslaToHex(colorway.tertiaryForeground),
+									color: foregroundColor,
 								}}
 							/>
 						</mesh>
@@ -138,11 +170,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 							<motion.meshStandardMaterial
 								initial={{ color: '#000000' }}
 								animate={{
-									color: meta.isModifierKey
-										? hslaToHex(colorway.primaryForeground)
-										: meta.isAlphaKey
-											? hslaToHex(colorway.secondaryForeground)
-											: hslaToHex(colorway.tertiaryForeground),
+									color: foregroundColor,
 								}}
 							/>
 						</mesh>
@@ -159,11 +187,7 @@ export const Keycap = ({ keycap }: { keycap: KleKey }) => {
 						<motion.meshStandardMaterial
 							initial={{ color: '#000000' }}
 							animate={{
-								color: meta.isModifierKey
-									? hslaToHex(colorway.primaryForeground)
-									: meta.isAlphaKey
-										? hslaToHex(colorway.secondaryForeground)
-										: hslaToHex(colorway.tertiaryForeground),
+								color: foregroundColor,
 							}}
 						/>
 					</mesh>

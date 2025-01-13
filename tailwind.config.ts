@@ -1,6 +1,7 @@
 import { type Config } from 'tailwindcss';
 import twAnimate from 'tailwindcss-animate';
 import twScrollbar from 'tailwind-scrollbar';
+import twContainerQueries from '@tailwindcss/container-queries';
 import { fontFamily } from 'tailwindcss/defaultTheme';
 
 export default {
@@ -10,6 +11,10 @@ export default {
 		extend: {
 			fontFamily: {
 				sans: ['var(--font-geist-sans)', ...fontFamily.sans],
+				mono: ['var(--font-geist-mono)', ...fontFamily.mono],
+			},
+			fontSize: {
+				'2xs': '0.6rem',
 			},
 			animation: {
 				dotring: 'dotring 2s ease-out infinite',
@@ -33,6 +38,14 @@ export default {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',
+			},
+			containers: {
+				'2xs': '240px',
+				'screen-sm': '640px',
+				'screen-md': '768px',
+				'screen-lg': '1024px',
+				'screen-xl': '1280px',
+				'screen-2xl': '1536px',
 			},
 			colors: {
 				background: 'hsl(var(--background))',
@@ -86,5 +99,5 @@ export default {
 			},
 		},
 	},
-	plugins: [twAnimate, twScrollbar({ nocompatible: true })],
+	plugins: [twAnimate, twContainerQueries, twScrollbar({ nocompatible: true })],
 } satisfies Config;

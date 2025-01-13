@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef } from 'react';
 export const useThrottledCallback = <T extends (...args: any[]) => void>(
 	callback: T,
 	interval: number = 1000,
-	debounceTime: number | null = 0,
+	debounceTime: number | null = null,
 ) => {
 	const callbackRef = useRef<T>(callback);
 	const timeoutRef = useRef<NodeJS.Timeout | number | null>(null);

@@ -14,7 +14,7 @@ const LoadingOverlay = () => {
 	return (
 		<div
 			className={twJoin(
-				'bg-background pointer-events-none absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-500 ease-in-out',
+				'pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-background transition-opacity duration-500 ease-in-out',
 				ui.isKeyboardPending ? 'opacity-100' : 'opacity-0',
 			)}
 		>
