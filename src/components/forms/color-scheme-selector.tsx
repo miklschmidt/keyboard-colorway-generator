@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ColorSchemeKeySchema, type ColorHarmonyResponse, type ColorScheme } from '@/zods/palettespro';
 import { Loading } from '@/components/loading';
@@ -64,12 +64,12 @@ export function ColorSchemeSelector({
 		<Button variant="outline" className="focusable justify-start px-2 @container">
 			{isFetching ? <Loading size="sm" className="mr-2 size-4" /> : <SwatchBook className="mr-2 size-4" />}
 			{isPending ? (
-				<div className="flex flex-1 items-center justify-start gap-2">
-					<span>Fetching color schemes..</span>
+				<div className="flex min-w-0 flex-1 items-center justify-start gap-2">
+					<span className="truncate">Fetching color schemes..</span>
 				</div>
 			) : selectedColorScheme ? (
-				<div className="flex flex-1 items-center justify-between gap-2">
-					<span>{selectedColorScheme.label}</span>
+				<div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+					<span className="truncate">{selectedColorScheme.label}</span>
 					<ColorSchemeBar colorScheme={selectedColorScheme} />
 				</div>
 			) : (
@@ -101,6 +101,7 @@ export function ColorSchemeSelector({
 			<DrawerTrigger asChild id={id}>
 				{trigger}
 			</DrawerTrigger>
+			<DrawerTitle className="sr-only">Select a color scheme</DrawerTitle>
 			<DrawerContent>
 				<div className="mt-4 border-t">
 					<ColorSchemeList

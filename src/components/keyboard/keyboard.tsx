@@ -1,4 +1,3 @@
-import { readLayout } from '@/actions/layouts';
 import { Keycap } from '@/components/keyboard/keycap';
 import { OrientAtCursor } from '@/components/keyboard/orient-at-cursor';
 import { useQuery } from '@tanstack/react-query';
@@ -16,8 +15,8 @@ export const Keyboard = () => {
 	const { data, isPending } = useQuery({
 		queryKey: ['keyboard', selectedKeyboard.id],
 		queryFn: async () => {
-			const layout = await readLayout(selectedKeyboard.id);
-			const serial = deserialize(JSON.parse(layout));
+			const layout = await fetch(`/api/layouts/${selectedKeyboard.id}`);
+			const serial = deserialize(await layout.json());
 			loadedKeyboardId.current = selectedKeyboard.id;
 			return serial;
 		},

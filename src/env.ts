@@ -7,7 +7,7 @@ export const env = createEnv({
 	 */
 	server: {
 		NODE_ENV: z.enum(['development', 'test', 'production']),
-		KEYBOARD_LAYOUTS_PATH: z.string().default('./src/data/keyboard-layouts'),
+		KEYBOARD_LAYOUTS_PATH: z.string().optional(),
 	},
 
 	/**

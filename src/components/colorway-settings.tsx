@@ -18,12 +18,13 @@ export function KeycapSettings() {
 		<Card>
 			<CardHeader>
 				<CardTitle>
-					<Paintbrush className="size-5 text-tertiary" /> Colorway Settings
+					<Paintbrush className="size-5 flex-shrink-0 text-tertiary" />{' '}
+					<span className="truncate">Colorway Settings</span>
 				</CardTitle>
 				<CardDescription>Control how the color scheme is applied to the keycaps.</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<div className="grid w-full items-center gap-4">
+				<div className="grid w-full grid-cols-1 items-center gap-4">
 					<div className="flex flex-col space-y-1.5">
 						<Label htmlFor="colorway-mode">Mode</Label>
 						<ColorwayModeSelector

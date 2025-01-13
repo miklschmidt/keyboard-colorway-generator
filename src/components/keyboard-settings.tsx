@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getLayouts } from '@/actions/layouts';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useCallback } from 'react';
 import { keyboardState, keyboardActions } from '@/state/keyboard';
@@ -13,13 +12,16 @@ import { KeyboardIcon } from 'lucide-react';
 import { ColorPicker } from '@/components/forms/color-picker';
 import { type HslaColor } from '@uiw/color-convert';
 import { Separator } from '@/components/ui/separator';
+import { z } from 'zod';
+import { layoutZod } from '@/zods/layouts';
 
 export function KeyboardSettings() {
 	const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 	const { data: layouts, isFetched } = useQuery({
 		queryKey: ['layouts'],
 		queryFn: async () => {
-			return await getLayouts();
+			const layouts = await fetch('/api/layouts').then((res) => res.json());
+			return z.array(layoutZod).parse(layouts);
 		},
 		// No unneeded requests here!
 		enabled: isPopoverOpen,
@@ -62,7 +64,8 @@ export function KeyboardSettings() {
 		<Card>
 			<CardHeader>
 				<CardTitle>
-					<KeyboardIcon className="size-5 text-primary" /> Keyboard Settings
+					<KeyboardIcon className="size-5 flex-shrink-0 text-primary" />{' '}
+					<span className="truncate">Keyboard Settings</span>
 				</CardTitle>
 				<CardDescription>Change settings that effect the keyboard.</CardDescription>
 			</CardHeader>

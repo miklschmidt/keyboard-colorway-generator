@@ -193,21 +193,19 @@ export const ColorPicker = ({ value, onChange, id, disabled }: ColorPickerProps)
 	return (
 		<Popover open={open && !disabled} onOpenChange={setOpen}>
 			<PopoverTrigger asChild id={id} disabled={disabled}>
-				<div className="flex">
+				<div className="flex min-w-0">
 					<Button
 						variant="outline"
-						className="flex flex-1 justify-start px-2"
+						className="flex min-w-0 flex-1 justify-start px-2"
 						disabled={disabled}
 						onClick={() => setOpen(true)}
 					>
 						<Palette className="mr-2 size-4" />
-						<span className="capitalize">{colorName ? colorName : 'Pick a color'}</span>
+						<span className="min-w-0 truncate capitalize">{colorName ? colorName : 'Pick a color'}</span>
 						{value && (
 							<>
 								<Separator orientation="vertical" className="mx-2 h-4" />
-								<div className="hidden space-x-1 lg:flex">
-									<ColorSwatch value={value} />
-								</div>
+								<ColorSwatch value={value} />
 							</>
 						)}
 					</Button>

@@ -83,7 +83,8 @@ export function ColorschemeSettings() {
 		<Card>
 			<CardHeader>
 				<CardTitle>
-					<SwatchBook className="size-5 text-secondary" /> Color Scheme Settings
+					<SwatchBook className="size-5 flex-shrink-0 text-secondary" />{' '}
+					<span className="truncate">Color Scheme Settings</span>
 				</CardTitle>
 				<CardDescription>Change the color scheme used in the keycap colorway.</CardDescription>
 			</CardHeader>

@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SwatchBook } from 'lucide-react';
 
@@ -47,15 +47,11 @@ export function ColorwayModeSelector({ colorwayMode, setSelectedColorwayMode, id
 	const selectedColorwayMode = modes.find((mode) => mode.value === colorwayMode);
 
 	const trigger = (
-		<Button variant="outline" className="focusable justify-start px-2">
+		<Button variant="outline" className="focusable min-w-0 justify-start px-2">
 			<SwatchBook className="mr-2 size-4" />
-			{selectedColorwayMode ? (
-				<div className="flex flex-1 items-center justify-between gap-2">
-					<span>{selectedColorwayMode.label}</span>
-				</div>
-			) : (
-				<>Pick a mode</>
-			)}
+			<div className="flex min-w-0 flex-1 items-center justify-between gap-2 truncate">
+				<span className="truncate">{selectedColorwayMode ? selectedColorwayMode.label : 'Pick a mode'}</span>
+			</div>
 		</Button>
 	);
 
@@ -77,6 +73,7 @@ export function ColorwayModeSelector({ colorwayMode, setSelectedColorwayMode, id
 			<DrawerTrigger asChild id={id}>
 				{trigger}
 			</DrawerTrigger>
+			<DrawerTitle className="sr-only">Select a color mode</DrawerTitle>
 			<DrawerContent>
 				<div className="mt-4 border-t">
 					<ColorwayModeList setOpen={setOpen} setSelectedColorwayMode={setSelectedColorwayMode} />
