@@ -10,7 +10,7 @@ import { Paintbrush } from 'lucide-react';
 import { objMerge } from '@/lib/utils';
 
 export function KeycapSettings() {
-	const { originalColor, colorwayMode, colorway } = useSnapshot(keyboardState);
+	const { colorwayMode, colorway } = useSnapshot(keyboardState);
 	const setSelectedColorwayMode = (mode: ColorwayMode | null) => {
 		keyboardActions.setColorway(mode?.value ?? 'custom');
 	};
@@ -47,7 +47,7 @@ export function KeycapSettings() {
 						/>
 					</div>
 					<div className="flex flex-col space-y-1.5">
-						<Label htmlFor="numbers-color">Numbers</Label>
+						<Label htmlFor="numbers-color">Number keys</Label>
 						<ColorPicker
 							id="numbers-color"
 							disabled={colorwayMode === 'wave'}
@@ -61,7 +61,7 @@ export function KeycapSettings() {
 						/>
 					</div>
 					<div className="flex flex-col space-y-1.5">
-						<Label htmlFor="modifiers-color">Modifiers</Label>
+						<Label htmlFor="modifiers-color">Modifier keys</Label>
 						<ColorPicker
 							id="modifiers-color"
 							disabled={colorwayMode === 'wave'}
@@ -75,7 +75,7 @@ export function KeycapSettings() {
 						/>
 					</div>
 					<div className="flex flex-col space-y-1.5">
-						<Label htmlFor="special-color">Special</Label>
+						<Label htmlFor="special-color">Special keys</Label>
 						<ColorPicker
 							id="special-color"
 							disabled={colorwayMode === 'wave'}
@@ -89,7 +89,7 @@ export function KeycapSettings() {
 						/>
 					</div>
 					<div className="flex flex-col space-y-1.5">
-						<Label htmlFor="spacebar-color">Spacebar</Label>
+						<Label htmlFor="spacebar-color">Spacebars</Label>
 						<ColorPicker
 							id="spacebar-color"
 							disabled={colorwayMode === 'wave'}

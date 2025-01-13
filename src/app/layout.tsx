@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" className={`${GeistSans.variable}`}>
-			<body className="bg-background text-foreground dark">
+			<body className="dark bg-background text-foreground">
 				{children}
-				<Toaster />
+				<Toaster position="top-center" />
 			</body>
 		</html>
 	);

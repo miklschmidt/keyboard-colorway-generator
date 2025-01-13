@@ -15,7 +15,7 @@ export default function HomePage() {
 		<QueryClientProvider client={queryClient}>
 			<main
 				className={twJoin(
-					'bg-background flex h-screen max-h-screen w-full flex-col items-stretch justify-center overflow-hidden text-white',
+					'flex h-screen max-h-screen w-full flex-col items-stretch justify-center overflow-hidden bg-background text-white',
 				)}
 			>
 				<div className="grid flex-grow-0 grid-cols-3 gap-4 p-4">
