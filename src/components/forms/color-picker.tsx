@@ -9,7 +9,7 @@ import { Palette } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { hslaToHex } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { useKeypress } from '@/hooks/use-keypress';
 import { deepClone } from 'valtio/utils';
@@ -32,14 +32,33 @@ export const ColorPicker = ({ value, onChange, id, disabled }: ColorPickerProps)
 	valueRef.current = value;
 	hslaRef.current = hsla;
 
-	const [open, setOpen] = useState(false);
+	const [open, _setOpen] = useState(false);
 
+	const setOpen = useCallback(
+		(open: boolean) => {
+			if (disabled) {
+				_setOpen(false);
+				return;
+			}
+			_setOpen(open);
+		},
+		[disabled],
+	);
+
+	// Close the color picker if the user presses enter or escape
 	useKeypress(
 		['enter', 'escape'],
 		useCallback(() => {
 			setOpen(false);
-		}, []),
+		}, [setOpen]),
 	);
+
+	// Close the color picker if the picker is disabled
+	useEffect(() => {
+		if (disabled) {
+			setOpen(false);
+		}
+	}, [disabled, setOpen]);
 
 	const updateLocalValues = useCallback((hsva: HsvaColor) => {
 		setHex(hslaToHex(hsvaToHsla(hsva)));
