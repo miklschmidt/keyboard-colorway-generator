@@ -161,7 +161,21 @@ export const keyboardActions = {
 			case 'wave':
 				break;
 			case 'custom':
-				objMerge(keyboardState.colorway, customColorway ?? {});
+				objMerge(
+					keyboardState.colorway,
+					customColorway ?? {
+						alphas: deepClone(keyboardState.colorway.alphas),
+						alphasForeground: deepClone(keyboardState.colorway.alphasForeground),
+						numbers: deepClone(keyboardState.colorway.numbers),
+						numbersForeground: deepClone(keyboardState.colorway.numbersForeground),
+						modifiers: deepClone(keyboardState.colorway.modifiers),
+						modifiersForeground: deepClone(keyboardState.colorway.modifiersForeground),
+						spacebar: deepClone(keyboardState.colorway.spacebar),
+						spacebarForeground: deepClone(keyboardState.colorway.spacebarForeground),
+						special: deepClone(keyboardState.colorway.special),
+						specialForeground: deepClone(keyboardState.colorway.specialForeground),
+					},
+				);
 				break;
 		}
 	},
